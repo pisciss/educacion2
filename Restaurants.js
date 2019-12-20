@@ -2,47 +2,29 @@ import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import ActionButton from "react-native-action-button";
 import Icon from "react-native-vector-icons/Ionicons";
+import AddRestaurant from "./AddRestaurant";
 
 //import ActionButton from "react-native-action-button";
 //import AddRestaurant from "./AddRestaurant";
 
-export default function Restaurants() {
+export default function Restaurants(props) {
+  const { navigation } = props;
+
   return (
     <View style={{ flex: 1, backgroundColor: "#f3f3f3" }}>
-      {/* Rest of the app comes ABOVE the action button component !*/}
-      <ActionButton buttonColor="rgba(231,76,60,1)">
-        <ActionButton.Item
-          buttonColor="#9b59b6"
-          title="New Task"
-          onPress={() => console.log("notes tapped!")}
-        >
-          <Icon name="md-create" style={styles.actionButtonIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          buttonColor="#3498db"
-          title="Notifications"
-          onPress={() => {}}
-        >
-          <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
-        </ActionButton.Item>
-        <ActionButton.Item
-          buttonColor="#1abc9c"
-          title="All Tasks"
-          onPress={() => {}}
-        >
-          <Icon name="md-done-all" style={styles.actionButtonIcon} />
-        </ActionButton.Item>
-      </ActionButton>
+      <AddRestaurantButton navigation={navigation} />
     </View>
   );
 }
 
-function AddRestaurantButton() {
+function AddRestaurantButton(props) {
+  const { navigation } = props;
   return (
-    <Button
-      title="Agregar"
-      size={10}
-      onPress={() => console.log("Simple Button pressed")}
+    <ActionButton
+      buttonColor="rgba(231,76,60,1)"
+      onPress={() => {
+        navigation.navigate("AddRestaurant");
+      }}
     />
   );
 }
