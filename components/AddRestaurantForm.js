@@ -5,30 +5,44 @@ import {
   Text,
   Button,
   AsyncStorage,
-  Keyboard
+  Keyboard,
+  Navigator
 } from "react-native";
+import List from "./List";
 import { Input } from "react-native-elements";
-import { ScrollView } from "react-native-gesture-handler";
-import { render } from "react-dom";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
+import uuid from "uuid/v5";
+import { firebaseApp } from "../utils/FireBase";
+import firebase from "firebase/app";
+//import firebase from "react-native-firebase";
+import "firebase/firestore";
+firebase.database().goOffline();
+const db = firebase.firestore(firebaseApp);
 
 export default function AddRestaurantForm(props) {
   const { toastRef, setIsLoading, navigation } = props;
   const [restaurantName, setRestaurantName] = useState("");
   const [restaurantAddress, setRestaurantAddress] = useState("");
+
+  // const [list] = useState("");
   const saveData = () => {
-    // const {restaurantname,direccion} = this.state;
-    let myArray = {
-      restaurantName: restaurantName,
-      restaurantAddress: restaurantAddress
-    };
-    AsyncStorage.setItem("1", "myArray", JSON.stringify(myArray));
-    toastRef.current.show("Datos guardados Correctamente");
+    setIsLoading(false);
+    db.collection("restaurants")
+      .add({
+        name: restaurantName,
+        direccion: restaurantAddress,
+        createAt: new Date()
+      })
+      .then(() => {
+        setIsLoading(false);
+        navigation.navigate("Restaurants");
+      })
+      .catch(() => {
+        toastRef.current.setIsLoading(false);
+        show(" Error al subir los datos");
+      });
   };
-  const showData = async () => {
-    let myArray = await AsyncStorage.getItem("myArray");
-    let d = JSON.parse(myArray);
-    alert(d.restaurantName + " " + d.restaurantAddress);
-  };
+
   return (
     <ScrollView>
       <FormAdd
@@ -36,7 +50,6 @@ export default function AddRestaurantForm(props) {
         setRestaurantAddress={setRestaurantAddress}
       />
       <Button title="Guardar" onPress={saveData} />
-      <Button title="Ver Datos" onPress={showData} />
     </ScrollView>
   );
 }
@@ -47,12 +60,14 @@ function FormAdd(props) {
       <Input
         placeholder="Nombre del Restaurante"
         containerStyle={styles.input}
+        //value={restaurantName}
         onChange={e => setRestaurantName(e.nativeEvent.text)}
         // onChangeText ={restaurantname=> this.setState({restaurantname})}
       />
       <Input
         placeholder="Dirección"
         containerStyle={styles.input}
+        // value={restaurantAddress}
         onChange={e => setRestaurantAddress(e.nativeEvent.text)}
         //  onChangeText ={direccion=> this.setState({direccion})}
       />
